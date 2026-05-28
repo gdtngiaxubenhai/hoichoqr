@@ -566,7 +566,7 @@ async function addTurn(qr){
 
   },1500);
 }
-  async function closeExchange(){
+async function closeExchange(){
 
   hidePopup();
 
@@ -621,74 +621,81 @@ function handleResult(res){
 
   if(res.needExchange){
 
-    showPopup(
+  showPopup(
 
-  `
-  ❌ HẾT LƯỢT CHƠI
+    `
+    ❌ HẾT LƯỢT CHƠI
 
-  <br><br>
+    <br><br>
 
-  👤 ${res.name}
+    👤 ${res.name}
 
-  <br><br>
+    <br>
 
-  <input
-    id="turnInput"
-    type="number"
-    placeholder="Nhập số lượt"
-    style="
-      width:80%;
-      padding:14px;
-      font-size:24px;
-      border-radius:12px;
-      border:none;
-      text-align:center;
-    "
-  >
+    🏫 ${res.lop}
 
-  <br><br>
+    <br><br>
 
-  <div
-    style="
-      display:flex;
-      justify-content:center;
-      gap:10px;
-    "
-  >
-
-    <button
-      onclick="closeExchange()"
+    <input
+      id="turnInput"
+      type="number"
+      placeholder="Nhập số lượt"
       style="
-        padding:14px 22px;
-        font-size:20px;
+        width:80%;
+        padding:14px;
+        font-size:24px;
+        border-radius:12px;
         border:none;
-        border-radius:14px;
-        background:#666;
-        color:white;
+        text-align:center;
       "
     >
-      ❌ Bỏ qua
-    </button>
 
-    <button
-      onclick="addTurn('${lastCode}')"
+    <br><br>
+
+    <div
       style="
-        padding:14px 22px;
-        font-size:20px;
-        border:none;
-        border-radius:14px;
-        background:#00aa55;
-        color:white;
+        display:flex;
+        justify-content:center;
+        gap:12px;
       "
     >
-      ✅ Quy đổi
-    </button>
 
-  </div>
-  `,
+      <button
+        onclick="closeExchange()"
+        style="
+          padding:14px 24px;
+          font-size:20px;
+          border:none;
+          border-radius:14px;
+          background:#666;
+          color:white;
+        "
+      >
+        ❌ Bỏ qua
+      </button>
 
-  false
-);
+      <button
+        onclick="addTurn('${lastCode}')"
+        style="
+          padding:14px 24px;
+          font-size:20px;
+          border:none;
+          border-radius:14px;
+          background:#00aa55;
+          color:white;
+        "
+      >
+        ✅ Quy đổi
+      </button>
+
+    </div>
+    `,
+
+    false
+  );
+
+  return;
+}
 
   }else{
 
@@ -711,7 +718,7 @@ function handleResult(res){
   },200);
   // nếu hết lượt thì dừng tại popup
 if(res.needExchange){
-
+    stopCamera();
   return;
 }
   resetScan();
