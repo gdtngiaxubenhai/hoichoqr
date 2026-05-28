@@ -481,7 +481,91 @@ function sendData(text){
   });
 }
 
+async function addTurn(qr){
 
+  const input =
+    document.getElementById("turnInput");
+
+  const turn =
+    Number(input.value || 0);
+
+  if(turn <= 0){
+
+    alert("Nhập số lượt hợp lệ");
+
+    return;
+  }
+
+  result.innerHTML =
+    "⏳ Đang quy đổi...";
+
+  try{
+
+    const res = await fetch(
+
+      "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec" // thay link webapp
+      + "?action=addTurn"
+      + "&mtn=" + encodeURIComponent(qr)
+      + "&turn=" + turn
+
+    );
+
+    const data =
+      await res.json();
+
+    if(data.success){
+
+      successEffect();
+
+      showPopup(
+
+        `
+        ✅ Đã cộng lượt
+
+        <br><br>
+
+        🎮 Tổng lượt:
+        ${data.remain}
+        `,
+
+        true
+      );
+
+    }else{
+
+      errorEffect();
+
+      showPopup(
+
+        `
+        ❌ ${data.message}
+        `,
+
+        false
+      );
+    }
+
+  }catch(err){
+
+    console.log(err);
+
+    errorEffect();
+
+    alert("Lỗi kết nối");
+  }
+
+  setTimeout(async ()=>{
+
+    hidePopup();
+
+    result.innerHTML = "";
+
+    scanning = true;
+
+    await stopCamera();
+
+  },1500);
+}
 // ================= RESULT =================
 
 function handleResult(res){
@@ -514,12 +598,66 @@ function handleResult(res){
     );
 
   }else{
-    errorEffect();
-    document.body.style.background =
-      "#880000";
 
-    result.innerHTML =
-      `❌ ${res.message}`;
+  errorEffect();
+
+  document.body.style.background =
+    "#880000";
+
+  result.innerHTML =
+    `❌ ${res.message}`;
+
+  // ================= HẾT LƯỢT =================
+
+  if(res.needExchange){
+
+    showPopup(
+
+      `
+      ❌ HẾT LƯỢT CHƠI
+
+      <br><br>
+
+      👤 ${res.name}
+
+      <br><br>
+
+      <input
+        id="turnInput"
+        type="number"
+        placeholder="Nhập số lượt"
+        style="
+          width:80%;
+          padding:14px;
+          font-size:24px;
+          border-radius:12px;
+          border:none;
+          text-align:center;
+          margin-top:10px;
+        "
+      >
+
+      <br><br>
+
+      <button
+        onclick="addTurn('${lastCode}')"
+        style="
+          padding:14px 24px;
+          font-size:22px;
+          border:none;
+          border-radius:14px;
+          background:#00aa55;
+          color:white;
+        "
+      >
+        ✅ Quy đổi
+      </button>
+      `,
+
+      false
+    );
+
+  }else{
 
     showPopup(
 
@@ -530,6 +668,7 @@ function handleResult(res){
       false
     );
   }
+}
 
   setTimeout(()=>{
 
