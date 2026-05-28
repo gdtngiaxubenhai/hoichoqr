@@ -318,16 +318,6 @@ id="userInfo"
 📷 Bắt đầu quét
 </button>
 
-<button
-onclick="logout()"
-style="
-  margin-top:10px;
-  background:#aa2222;
-"
->
-🚪 Logout
-</button>
-
 <div id="result"></div>
 
 <div id="popup"></div>
@@ -475,17 +465,6 @@ function login(){
     .innerHTML =
     "❌ Lỗi kết nối";
   });
-}
-
-// ================= LOGOUT =================
-
-function logout(){
-
-  localStorage.removeItem("user");
-
-  localStorage.removeItem("booth");
-
-  location.reload();
 }
 
 // ================= POPUP =================
