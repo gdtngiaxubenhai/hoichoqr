@@ -566,6 +566,16 @@ async function addTurn(qr){
 
   },1500);
 }
+  async function closeExchange(){
+
+  hidePopup();
+
+  result.innerHTML = "";
+
+  scanning = true;
+
+  await stopCamera();
+}
 // ================= RESULT =================
 
 function handleResult(res){
@@ -613,49 +623,72 @@ function handleResult(res){
 
     showPopup(
 
-      `
-      ❌ HẾT LƯỢT CHƠI
+  `
+  ❌ HẾT LƯỢT CHƠI
 
-      <br><br>
+  <br><br>
 
-      👤 ${res.name}
+  👤 ${res.name}
 
-      <br><br>
+  <br><br>
 
-      <input
-        id="turnInput"
-        type="number"
-        placeholder="Nhập số lượt"
-        style="
-          width:80%;
-          padding:14px;
-          font-size:24px;
-          border-radius:12px;
-          border:none;
-          text-align:center;
-          margin-top:10px;
-        "
-      >
+  <input
+    id="turnInput"
+    type="number"
+    placeholder="Nhập số lượt"
+    style="
+      width:80%;
+      padding:14px;
+      font-size:24px;
+      border-radius:12px;
+      border:none;
+      text-align:center;
+    "
+  >
 
-      <br><br>
+  <br><br>
 
-      <button
-        onclick="addTurn('${lastCode}')"
-        style="
-          padding:14px 24px;
-          font-size:22px;
-          border:none;
-          border-radius:14px;
-          background:#00aa55;
-          color:white;
-        "
-      >
-        ✅ Quy đổi
-      </button>
-      `,
+  <div
+    style="
+      display:flex;
+      justify-content:center;
+      gap:10px;
+    "
+  >
 
-      false
-    );
+    <button
+      onclick="closeExchange()"
+      style="
+        padding:14px 22px;
+        font-size:20px;
+        border:none;
+        border-radius:14px;
+        background:#666;
+        color:white;
+      "
+    >
+      ❌ Bỏ qua
+    </button>
+
+    <button
+      onclick="addTurn('${lastCode}')"
+      style="
+        padding:14px 22px;
+        font-size:20px;
+        border:none;
+        border-radius:14px;
+        background:#00aa55;
+        color:white;
+      "
+    >
+      ✅ Quy đổi
+    </button>
+
+  </div>
+  `,
+
+  false
+);
 
   }else{
 
@@ -676,7 +709,11 @@ function handleResult(res){
       "#111";
 
   },200);
+  // nếu hết lượt thì dừng tại popup
+if(res.needExchange){
 
+  return;
+}
   resetScan();
 }
 
