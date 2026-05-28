@@ -370,7 +370,16 @@ localStorage.getItem("user");
 const savedBooth =
 localStorage.getItem("booth");
 
-if(savedUser){
+const loginTime =
+Number(localStorage.getItem("loginTime") || 0);
+
+const EXPIRE =
+2 * 60 * 60 * 100; // 2 tiếng 2 * 60 * 60 * 1000;
+
+if(
+  savedUser &&
+  Date.now() - loginTime < EXPIRE
+){
 
   currentUser = savedUser;
 
@@ -386,6 +395,14 @@ if(savedUser){
   .innerHTML =
   "👤 " + currentUser
   + " | 🎪 " + currentBooth;
+
+}else{
+
+  localStorage.removeItem("user");
+
+  localStorage.removeItem("booth");
+
+  localStorage.removeItem("loginTime");
 }
 
 // ================= LOGIN =================
@@ -437,6 +454,10 @@ function login(){
       localStorage.setItem(
         "booth",
         currentBooth
+      );
+      localStorage.setItem(
+        "loginTime",
+        Date.now()
       );
 
       document.getElementById("loginBox")
