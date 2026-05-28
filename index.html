@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:#111;
+  color:white;
+  text-align:center;
+}
+
+h2{
+  margin-top:15px;
+}
+
+#reader{
+  width:100%;
+}
+
+#result{
+  font-size:24px;
+  padding:15px;
+  font-weight:bold;
+}
+
+button{
+  padding:12px 16px;
+  margin:5px;
+  font-size:15px;
+  border:none;
+  border-radius:10px;
+  background:#222;
+  color:white;
+}
+
+#popup{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#111;
+  padding:30px;
+  border-radius:20px;
+  width:80%;
+  z-index:9999;
+  font-size:28px;
+  font-weight:bold;
+  display:none;
+  box-shadow:0 0 30px #000;
+}
+
+.popup-success{
+  border:3px solid #00ff99;
+  color:#00ff99;
+}
+
+.popup-error{
+  border:3px solid #ff4444;
+  color:#ff4444;
+}
+
+.show{
+  animation:pop .2s ease;
+}
+
+@keyframes pop{
+
+  from{
+    transform:translate(-50%,-50%) scale(.7);
+    opacity:0;
+  }
+
+  to{
+    transform:translate(-50%,-50%) scale(1);
+    opacity:1;
+  }
+}
+#scanBtn{
+
+  position:fixed;
+
+  bottom:20px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:85%;
+
+  max-width:500px;
+
+  padding:22px;
+
+  font-size:28px;
+
+  font-weight:bold;
+
+  border-radius:20px;
+
+  background:#00aa55;
+
+  color:white;
+
+  z-index:9999;
+
+  box-shadow:0 0 20px rgba(0,0,0,.4);
+}
+</style>
+</head>
+
+<body>
+
+  <div
+  style="
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-top:15px;
+  "
+>
+
+  <img
+    src="https://i.ibb.co/YqNWky2/logo.jpg"
+    style="
+      width:58px;
+      height:58px;
+      object-fit:contain;
+      border-radius:50%;
+      flex-shrink:0;
+    "
+  >
+
+  <div
+    style="
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      line-height:1.3;
+    "
+  >
+
+    <div
+      style="
+        font-size:22px;
+        font-weight:700;
+      "
+    >
+      Giáo xứ Bến Hải
+    </div>
+
+    <div
+      style="
+        font-size:16px;
+        font-weight:700;
+        opacity:.95;
+      "
+    >
+      Xứ đoàn Mình Máu Thánh Chúa KiTô
+    </div>
+
+  </div>
+
+</div>
+
+  <div id="reader" style="display:none;"></div>
+
+<button onclick="openScanner()" id="scanBtn">
+📷 Bắt đầu quét
+</button>
+  
+<div id="result"></div>
+  
+<div id="popup"></div>
+
+<script>
+
+const result = document.getElementById("result");
+
+const popup = document.getElementById("popup");
+
+const successAudio = new Audio(
+  "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+);
+
+const errorAudio = new Audio(
+  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+);
+
+successAudio.load();
+errorAudio.load();
+
+let html5QrCode = new Html5Qrcode("reader");
+
+let cameras = [];
+
+let scanning = true;
+
+let lastCode = "";
+
+let lastTime = 0;
+
+let cameraStarted = false;
+
+let scannerOpened = false;
+
+// ================= POPUP =================
+
+function showPopup(html, ok=true){
+
+  popup.style.display = "block";
+
+  popup.className = ok
+    ? "popup-success"
+    : "popup-error";
+
+  popup.classList.remove("show");
+
+  void popup.offsetWidth;
+
+  popup.classList.add("show");
+
+  popup.innerHTML = html;
+}
+
+function hidePopup(){
+
+  popup.style.display = "none";
+}
+// ================= SUCCESS =================
+
+function successEffect(){
+
+  if(navigator.vibrate){
+
+    navigator.vibrate([200,80,200]);
+  }
+
+  successAudio.pause();
+
+  successAudio.currentTime = 0;
+
+  const playPromise =
+    successAudio.play();
+
+  if(playPromise !== undefined){
+
+    playPromise.catch(err=>{
+
+      console.log(err);
+    });
+  }
+
+  document.body.style.background = "#063";
+
+  setTimeout(()=>{
+
+    document.body.style.background = "#111";
+
+  },150);
+}
+
+// ================= ERROR =================
+
+function errorEffect(){
+
+  if(navigator.vibrate){
+
+    navigator.vibrate([100,80,100]);
+  }
+
+  errorAudio.pause();
+
+  errorAudio.currentTime = 0;
+
+  const playPromise =
+    errorAudio.play();
+
+  if(playPromise !== undefined){
+
+    playPromise.catch(err=>{
+
+      console.log(err);
+    });
+  }
+
+  document.body.style.background = "#500";
+
+  setTimeout(()=>{
+
+    document.body.style.background = "#111";
+
+  },200);
+}
+
+// ================= DUPLICATE =================
+
+function isDuplicate(code){
+
+  const now = Date.now();
+
+  if(code === lastCode && now - lastTime < 3000){
+
+    return true;
+  }
+
+  lastCode = code;
+
+  lastTime = now;
+
+  return false;
+}
+async function openScanner(){
+
+  if(cameraStarted) return;
+
+  // unlock audio mobile
+
+  successAudio.play()
+  .then(()=>{
+
+    successAudio.pause();
+
+    successAudio.currentTime = 0;
+
+  })
+  .catch(()=>{});
+
+  errorAudio.play()
+  .then(()=>{
+
+    errorAudio.pause();
+
+    errorAudio.currentTime = 0;
+
+  })
+  .catch(()=>{});
+
+  document.getElementById("reader").style.display =
+    "block";
+
+  document.getElementById("scanBtn").style.display =
+    "none";
+
+  result.innerHTML =
+    "📷 Đang mở camera...";
+
+  startCamera();
+}
+
+// ================= START CAMERA =================
+
+async function startCamera(){
+
+  try{
+
+    if(cameraStarted){
+
+      await html5QrCode.stop();
+
+      cameraStarted = false;
+    }
+
+    await html5QrCode.start(
+
+      {
+        facingMode:"environment"
+      },
+
+      {
+        fps:20,
+
+        qrbox:{
+          width:280,
+          height:180
+        },
+
+        aspectRatio:1.777
+      },
+
+      onScan
+    );
+
+    cameraStarted = true;
+
+    result.innerHTML = "📷 Sẵn sàng quét";
+
+  }catch(err){
+
+    console.log(err);
+
+    result.innerHTML = "❌ Không mở được camera";
+  }
+}
+// ================= Stop CAMERA =================
+  async function stopCamera(){
+
+  try{
+
+    if(cameraStarted){
+
+      await html5QrCode.stop();
+
+      cameraStarted = false;
+    }
+
+  }catch(e){
+
+    console.log(e);
+  }
+
+  document.getElementById("reader").style.display =
+    "none";
+
+  document.getElementById("scanBtn").style.display =
+    "block";
+}
+// ================= SCAN =================
+
+function onScan(decodedText){
+
+  if(!scanning) return;
+
+  if(isDuplicate(decodedText)) return;
+
+  scanning = false;
+
+  result.innerHTML = "⏳ Đang xử lý...";
+
+  sendData(decodedText);
+}
+
+
+// ================= SEND =================
+
+let offlineQueue = JSON.parse(
+  localStorage.getItem("queue") || "[]"
+);
+
+function saveQueue(){
+
+  localStorage.setItem(
+    "queue",
+    JSON.stringify(offlineQueue)
+  );
+}
+
+function sendData(text){
+
+  fetch(
+    "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec?mtn="
+    + encodeURIComponent(text)
+  )
+
+  .then(r => r.json())
+
+  .then(res => {
+
+    handleResult(res);
+
+  })
+
+  .catch(() => {
+
+    offlineQueue.push(text);
+
+    saveQueue();
+
+    result.innerHTML =
+      "📶 Mất mạng - đã lưu";
+
+    errorEffect();
+    resetScan();
+  });
+}
+
+
+// ================= RESULT =================
+
+function handleResult(res){
+
+   if(res.success){
+
+    successEffect();
+
+    document.body.style.background =
+      "#008855";
+
+    result.innerHTML =
+      `✅ ${res.message}`;
+
+    showPopup(
+
+      `
+      ✅ ${res.message}
+
+      <br><br>
+
+      👤 ${res.name}
+
+      <br>
+
+      🏫 ${res.lop}
+      `,
+
+      true
+    );
+
+  }else{
+    errorEffect();
+    document.body.style.background =
+      "#880000";
+
+    result.innerHTML =
+      `❌ ${res.message}`;
+
+    showPopup(
+
+      `
+      ❌ ${res.message}
+      `,
+
+      false
+    );
+  }
+
+  setTimeout(()=>{
+
+    document.body.style.background =
+      "#111";
+
+  },200);
+
+  resetScan();
+}
+
+
+// ================= RESET =================
+
+function resetScan(){
+
+  setTimeout(async ()=>{
+
+    hidePopup();
+
+    scanning = true;
+
+    result.innerHTML ="";
+
+    await stopCamera();
+
+  },1500);
+}
+
+// ================= OFFLINE AUTO SYNC =================
+
+setInterval(()=>{
+
+  if(!navigator.onLine) return;
+
+  if(offlineQueue.length === 0) return;
+
+  const item = offlineQueue.shift();
+
+  saveQueue();
+
+  fetch(
+    "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec/exec?mtn="
+    + encodeURIComponent(item)
+  );
+
+},5000);
+
+
+// ================= INIT =================
+
+Html5Qrcode.getCameras()
+
+.then(devices => {
+
+  if(devices.length === 0){
+
+    result.innerHTML =
+      "❌ Không tìm thấy camera";
+
+    return;
+  }
+
+  cameras = devices;
+})
+
+.catch(err => {
+
+  console.log(err);
+
+  result.innerHTML =
+    "❌ Không cấp quyền camera";
+});
+
+</script>
+
+</body>
+</html>
