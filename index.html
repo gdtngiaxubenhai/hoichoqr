@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,18 +16,14 @@ body{
   text-align:center;
 }
 
-h2{
-  margin-top:15px;
-}
-
-#reader{
+input{
   width:100%;
-}
-
-#result{
-  font-size:24px;
-  padding:15px;
-  font-weight:bold;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  font-size:18px;
+  box-sizing:border-box;
+  margin-bottom:14px;
 }
 
 button{
@@ -37,6 +34,16 @@ button{
   border-radius:10px;
   background:#222;
   color:white;
+}
+
+#reader{
+  width:100%;
+}
+
+#result{
+  font-size:24px;
+  padding:15px;
+  font-weight:bold;
 }
 
 #popup{
@@ -81,6 +88,7 @@ button{
     opacity:1;
   }
 }
+
 #scanBtn{
 
   position:fixed;
@@ -111,95 +119,246 @@ button{
 
   box-shadow:0 0 20px rgba(0,0,0,.4);
 }
+
 </style>
 </head>
 
 <body>
 
-  <div
-  style="
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:14px;
-    margin-top:15px;
-  "
->
+<!-- ================= LOGIN ================= -->
 
-  <img
-    src="https://i.ibb.co/YqNWky2/logo.jpg"
-    style="
-      width:58px;
-      height:58px;
-      object-fit:contain;
-      border-radius:50%;
-      flex-shrink:0;
-    "
-  >
+<div id="loginBox">
 
   <div
     style="
       display:flex;
-      flex-direction:column;
-      justify-content:center;
       align-items:center;
-      line-height:1.3;
+      justify-content:center;
+      gap:14px;
+      margin-top:25px;
+      margin-bottom:25px;
+    "
+  >
+
+    <img
+      src="https://i.ibb.co/YqNWky2/logo.jpg"
+      style="
+        width:58px;
+        height:58px;
+        object-fit:contain;
+        border-radius:50%;
+        flex-shrink:0;
+      "
+    >
+
+    <div
+      style="
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        line-height:1.3;
+      "
+    >
+
+      <div
+        style="
+          font-size:22px;
+          font-weight:700;
+        "
+      >
+        Giáo xứ Bến Hải
+      </div>
+
+      <div
+        style="
+          font-size:16px;
+          font-weight:700;
+          opacity:.95;
+        "
+      >
+        Xứ đoàn Mình Máu Thánh Chúa KiTô
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    style="
+      width:90%;
+      max-width:420px;
+      margin:auto;
+      background:#1b1b1b;
+      padding:25px;
+      border-radius:20px;
+      box-sizing:border-box;
     "
   >
 
     <div
       style="
-        font-size:22px;
-        font-weight:700;
+        font-size:28px;
+        font-weight:bold;
+        margin-bottom:20px;
       "
     >
-      Giáo xứ Bến Hải
+      🔐 Đăng nhập quầy
     </div>
 
-    <div
+    <input
+      id="username"
+      placeholder="Tài khoản"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Mật khẩu"
+    >
+
+    <button
+      onclick="login()"
       style="
-        font-size:16px;
-        font-weight:700;
-        opacity:.95;
+        width:100%;
+        padding:18px;
+        margin-top:8px;
+        font-size:22px;
+        font-weight:bold;
+        border:none;
+        border-radius:16px;
+        background:#00aa55;
+        color:white;
       "
     >
-      Xứ đoàn Mình Máu Thánh Chúa KiTô
-    </div>
+      🔓 Đăng nhập
+    </button>
+
+    <div
+      id="loginMsg"
+      style="
+        margin-top:15px;
+        font-size:18px;
+        color:#ff6666;
+      "
+    ></div>
 
   </div>
 
 </div>
 
-  <div id="reader" style="display:none;"></div>
+<!-- ================= APP ================= -->
+
+<div id="app" style="display:none;">
+
+<div
+style="
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-top:15px;
+"
+>
+
+<img
+  src="https://i.ibb.co/YqNWky2/logo.jpg"
+  style="
+    width:58px;
+    height:58px;
+    object-fit:contain;
+    border-radius:50%;
+    flex-shrink:0;
+  "
+>
+
+<div
+  style="
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    line-height:1.3;
+  "
+>
+
+  <div
+    style="
+      font-size:22px;
+      font-weight:700;
+    "
+  >
+    Giáo xứ Bến Hải
+  </div>
+
+  <div
+    style="
+      font-size:16px;
+      font-weight:700;
+      opacity:.95;
+    "
+  >
+    Xứ đoàn Mình Máu Thánh Chúa KiTô
+  </div>
+
+</div>
+
+</div>
+
+<div
+style="
+  margin-top:10px;
+  font-size:18px;
+"
+id="userInfo"
+></div>
+
+<div id="reader" style="display:none;"></div>
 
 <button onclick="openScanner()" id="scanBtn">
 📷 Bắt đầu quét
 </button>
-  
+
+<button
+onclick="logout()"
+style="
+  margin-top:10px;
+  background:#aa2222;
+"
+>
+🚪 Logout
+</button>
+
 <div id="result"></div>
-  
+
 <div id="popup"></div>
+
+</div>
 
 <script>
 
-const result = document.getElementById("result");
+const API =
+"https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec";
 
-const popup = document.getElementById("popup");
+const result =
+document.getElementById("result");
+
+const popup =
+document.getElementById("popup");
 
 const successAudio = new Audio(
-  "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+"https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
 );
 
 const errorAudio = new Audio(
-  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+"https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
 );
 
 successAudio.load();
 errorAudio.load();
 
-let html5QrCode = new Html5Qrcode("reader");
-
-let cameras = [];
+let html5QrCode =
+new Html5Qrcode("reader");
 
 let scanning = true;
 
@@ -209,7 +368,126 @@ let lastTime = 0;
 
 let cameraStarted = false;
 
-let scannerOpened = false;
+let currentUser = "";
+
+let currentBooth = "";
+
+// ================= AUTO LOGIN =================
+
+const savedUser =
+localStorage.getItem("user");
+
+const savedBooth =
+localStorage.getItem("booth");
+
+if(savedUser){
+
+  currentUser = savedUser;
+
+  currentBooth = savedBooth;
+
+  document.getElementById("loginBox")
+  .style.display = "none";
+
+  document.getElementById("app")
+  .style.display = "block";
+
+  document.getElementById("userInfo")
+  .innerHTML =
+  "👤 " + currentUser
+  + " | 🎪 " + currentBooth;
+}
+
+// ================= LOGIN =================
+
+function login(){
+
+  const username =
+    document.getElementById("username").value.trim();
+
+  const password =
+    document.getElementById("password").value.trim();
+
+  if(!username || !password){
+
+    document.getElementById("loginMsg")
+    .innerHTML =
+    "❌ Nhập tài khoản và mật khẩu";
+
+    return;
+  }
+
+  fetch(
+
+    API
+
+    + "?action=login"
+
+    + "&username="
+    + encodeURIComponent(username)
+
+    + "&password="
+    + encodeURIComponent(password)
+
+  )
+
+  .then(r=>r.json())
+
+  .then(res=>{
+
+    if(res.success){
+
+      currentUser = res.username;
+
+      currentBooth = res.booth;
+
+      localStorage.setItem(
+        "user",
+        currentUser
+      );
+
+      localStorage.setItem(
+        "booth",
+        currentBooth
+      );
+
+      document.getElementById("loginBox")
+      .style.display = "none";
+
+      document.getElementById("app")
+      .style.display = "block";
+
+      document.getElementById("userInfo")
+      .innerHTML =
+      "👤 " + currentUser
+      + " | 🎪 " + currentBooth;
+
+    }else{
+
+      document.getElementById("loginMsg")
+      .innerHTML =
+      "❌ Sai tài khoản";
+    }
+  })
+
+  .catch(()=>{
+
+    document.getElementById("loginMsg")
+    .innerHTML =
+    "❌ Lỗi kết nối";
+  });
+}
+
+// ================= LOGOUT =================
+
+function logout(){
+
+  localStorage.removeItem("user");
+
+  localStorage.removeItem("booth");
+
+  location.reload();
+}
 
 // ================= POPUP =================
 
@@ -234,6 +512,7 @@ function hidePopup(){
 
   popup.style.display = "none";
 }
+
 // ================= SUCCESS =================
 
 function successEffect(){
@@ -247,16 +526,7 @@ function successEffect(){
 
   successAudio.currentTime = 0;
 
-  const playPromise =
-    successAudio.play();
-
-  if(playPromise !== undefined){
-
-    playPromise.catch(err=>{
-
-      console.log(err);
-    });
-  }
+  successAudio.play().catch(()=>{});
 
   document.body.style.background = "#063";
 
@@ -280,16 +550,7 @@ function errorEffect(){
 
   errorAudio.currentTime = 0;
 
-  const playPromise =
-    errorAudio.play();
-
-  if(playPromise !== undefined){
-
-    playPromise.catch(err=>{
-
-      console.log(err);
-    });
-  }
+  errorAudio.play().catch(()=>{});
 
   document.body.style.background = "#500";
 
@@ -317,11 +578,12 @@ function isDuplicate(code){
 
   return false;
 }
+
+// ================= OPEN SCANNER =================
+
 async function openScanner(){
 
   if(cameraStarted) return;
-
-  // unlock audio mobile
 
   successAudio.play()
   .then(()=>{
@@ -343,14 +605,14 @@ async function openScanner(){
   })
   .catch(()=>{});
 
-  document.getElementById("reader").style.display =
-    "block";
+  document.getElementById("reader")
+  .style.display = "block";
 
-  document.getElementById("scanBtn").style.display =
-    "none";
+  document.getElementById("scanBtn")
+  .style.display = "none";
 
   result.innerHTML =
-    "📷 Đang mở camera...";
+  "📷 Đang mở camera...";
 
   startCamera();
 }
@@ -390,17 +652,21 @@ async function startCamera(){
 
     cameraStarted = true;
 
-    result.innerHTML = "📷 Sẵn sàng quét";
+    result.innerHTML =
+    "📷 Sẵn sàng quét";
 
   }catch(err){
 
     console.log(err);
 
-    result.innerHTML = "❌ Không mở được camera";
+    result.innerHTML =
+    "❌ Không mở được camera";
   }
 }
-// ================= Stop CAMERA =================
-  async function stopCamera(){
+
+// ================= STOP CAMERA =================
+
+async function stopCamera(){
 
   try{
 
@@ -416,12 +682,13 @@ async function startCamera(){
     console.log(e);
   }
 
-  document.getElementById("reader").style.display =
-    "none";
+  document.getElementById("reader")
+  .style.display = "none";
 
-  document.getElementById("scanBtn").style.display =
-    "block";
+  document.getElementById("scanBtn")
+  .style.display = "block";
 }
+
 // ================= SCAN =================
 
 function onScan(decodedText){
@@ -432,31 +699,31 @@ function onScan(decodedText){
 
   scanning = false;
 
-  result.innerHTML = "⏳ Đang xử lý...";
+  result.innerHTML =
+  "⏳ Đang xử lý...";
 
   sendData(decodedText);
 }
 
-
 // ================= SEND =================
-
-let offlineQueue = JSON.parse(
-  localStorage.getItem("queue") || "[]"
-);
-
-function saveQueue(){
-
-  localStorage.setItem(
-    "queue",
-    JSON.stringify(offlineQueue)
-  );
-}
 
 function sendData(text){
 
   fetch(
-    "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec?mtn="
+
+    API
+
+    + "?action=play"
+
+    + "&mtn="
     + encodeURIComponent(text)
+
+    + "&user="
+    + encodeURIComponent(currentUser)
+
+    + "&booth="
+    + encodeURIComponent(currentBooth)
+
   )
 
   .then(r => r.json())
@@ -469,25 +736,24 @@ function sendData(text){
 
   .catch(() => {
 
-    offlineQueue.push(text);
-
-    saveQueue();
-
     result.innerHTML =
-      "📶 Mất mạng - đã lưu";
+    "❌ Lỗi kết nối";
 
     errorEffect();
+
     resetScan();
   });
 }
 
+// ================= ADD TURN =================
+
 async function addTurn(qr){
 
   const input =
-    document.getElementById("turnInput");
+  document.getElementById("turnInput");
 
   const turn =
-    Number(input.value || 0);
+  Number(input.value || 0);
 
   if(turn <= 0){
 
@@ -497,21 +763,31 @@ async function addTurn(qr){
   }
 
   result.innerHTML =
-    "⏳ Đang quy đổi...";
+  "⏳ Đang quy đổi...";
 
   try{
 
     const res = await fetch(
 
-      "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec" // thay link webapp
-      + "?action=addTurn"
-      + "&mtn=" + encodeURIComponent(qr)
-      + "&turn=" + turn
+      API
 
+      + "?action=addTurn"
+
+      + "&mtn="
+      + encodeURIComponent(qr)
+
+      + "&turn="
+      + turn
+
+      + "&user="
+      + encodeURIComponent(currentUser)
+
+      + "&booth="
+      + encodeURIComponent(currentBooth)
     );
 
     const data =
-      await res.json();
+    await res.json();
 
     if(data.success){
 
@@ -566,6 +842,9 @@ async function addTurn(qr){
 
   },1500);
 }
+
+// ================= CLOSE EXCHANGE =================
+
 async function closeExchange(){
 
   hidePopup();
@@ -576,19 +855,17 @@ async function closeExchange(){
 
   await stopCamera();
 }
-// ================= RESULT =================
+
+// ================= HANDLE RESULT =================
 
 function handleResult(res){
 
-   if(res.success){
+  if(res.success){
 
     successEffect();
 
-    document.body.style.background =
-      "#008855";
-
     result.innerHTML =
-      `✅ ${res.message}`;
+    `✅ ${res.message}`;
 
     showPopup(
 
@@ -601,7 +878,8 @@ function handleResult(res){
 
       <br>
 
-      🏫 ${res.lop}
+      🎮 Còn:
+      ${res.remain}
       `,
 
       true
@@ -609,95 +887,86 @@ function handleResult(res){
 
   }else{
 
-  errorEffect();
+    errorEffect();
 
-  document.body.style.background =
-    "#880000";
-
-  result.innerHTML =
+    result.innerHTML =
     `❌ ${res.message}`;
 
-  // ================= HẾT LƯỢT =================
+    if(res.needExchange){
 
-  if(res.needExchange){
+      showPopup(
 
-  showPopup(
+        `
+        ❌ HẾT LƯỢT CHƠI
 
-    `
-    ❌ HẾT LƯỢT CHƠI
+        <br><br>
 
-    <br><br>
+        👤 ${res.name}
 
-    👤 ${res.name}
+        <br><br>
 
-    <br>
+        <input
+          id="turnInput"
+          type="number"
+          placeholder="Nhập số lượt"
+          style="
+            width:80%;
+            padding:14px;
+            font-size:24px;
+            border-radius:12px;
+            border:none;
+            text-align:center;
+          "
+        >
 
-    🏫 ${res.lop}
+        <br><br>
 
-    <br><br>
+        <div
+          style="
+            display:flex;
+            justify-content:center;
+            gap:12px;
+          "
+        >
 
-    <input
-      id="turnInput"
-      type="number"
-      placeholder="Nhập số lượt"
-      style="
-        width:80%;
-        padding:14px;
-        font-size:24px;
-        border-radius:12px;
-        border:none;
-        text-align:center;
-      "
-    >
+          <button
+            onclick="closeExchange()"
+            style="
+              padding:14px 24px;
+              font-size:20px;
+              border:none;
+              border-radius:14px;
+              background:#666;
+              color:white;
+            "
+          >
+            ❌ Bỏ qua
+          </button>
 
-    <br><br>
+          <button
+            onclick="addTurn('${lastCode}')"
+            style="
+              padding:14px 24px;
+              font-size:20px;
+              border:none;
+              border-radius:14px;
+              background:#00aa55;
+              color:white;
+            "
+          >
+            ✅ Quy đổi
+          </button>
 
-    <div
-      style="
-        display:flex;
-        justify-content:center;
-        gap:12px;
-      "
-    >
+        </div>
+        `,
 
-      <button
-        onclick="closeExchange()"
-        style="
-          padding:14px 24px;
-          font-size:20px;
-          border:none;
-          border-radius:14px;
-          background:#666;
-          color:white;
-        "
-      >
-        ❌ Bỏ qua
-      </button>
+        false
+      );
 
-      <button
-        onclick="addTurn('${lastCode}')"
-        style="
-          padding:14px 24px;
-          font-size:20px;
-          border:none;
-          border-radius:14px;
-          background:#00aa55;
-          color:white;
-        "
-      >
-        ✅ Quy đổi
-      </button>
+      stopCamera();
 
-    </div>
-    `,
-
-    false
-  );
-
-  return;
-}
-
-  }else{
+      return;
+    }
 
     showPopup(
 
@@ -708,22 +977,9 @@ function handleResult(res){
       false
     );
   }
-}
 
-  setTimeout(()=>{
-
-    document.body.style.background =
-      "#111";
-
-  },200);
-  // nếu hết lượt thì dừng tại popup
-if(res.needExchange){
-    stopCamera();
-  return;
-}
   resetScan();
 }
-
 
 // ================= RESET =================
 
@@ -742,52 +998,8 @@ function resetScan(){
   },1500);
 }
 
-// ================= OFFLINE AUTO SYNC =================
-
-setInterval(()=>{
-
-  if(!navigator.onLine) return;
-
-  if(offlineQueue.length === 0) return;
-
-  const item = offlineQueue.shift();
-
-  saveQueue();
-
-  fetch(
-    "https://script.google.com/macros/s/AKfycbxWSHtfL7FxAAzaAl5pHf427Z_VNDJoZDU5HzjdtZy4ZwioHOh9SN5MHCoV0o-4jJdN/exec/exec?mtn="
-    + encodeURIComponent(item)
-  );
-
-},5000);
-
-
-// ================= INIT =================
-
-Html5Qrcode.getCameras()
-
-.then(devices => {
-
-  if(devices.length === 0){
-
-    result.innerHTML =
-      "❌ Không tìm thấy camera";
-
-    return;
-  }
-
-  cameras = devices;
-})
-
-.catch(err => {
-
-  console.log(err);
-
-  result.innerHTML =
-    "❌ Không cấp quyền camera";
-});
-
 </script>
 
 </body>
 </html>
+```
