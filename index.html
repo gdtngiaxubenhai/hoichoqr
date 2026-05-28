@@ -425,10 +425,8 @@ function login(){
   .then(res=>{
 
     if(res.success){
-
-      currentUser = res.username;
-
-      currentBooth = res.booth;
+      currentUser = res.username || "";
+      currentBooth = res.booth || "";
 
       localStorage.setItem(
         "user",
